@@ -7,6 +7,7 @@
             :key="item.path" 
             :icon="item.meta.icon"
             :url="`#/${item.path}`"{{ item.meta }} 
+            
             >
         </van-tabbar-item>
     </van-tabbar>
