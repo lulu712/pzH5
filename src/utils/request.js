@@ -1,11 +1,13 @@
 import axios from 'axios'
 
 
+import router from '../router'
+
 const http = axios.create({
   baseURL: 'https://v3pz.itndedu.com/v3pz',
   timeout: 10000,
   // 設置H5終端標識
-  headers: { "terminal": "H5" }
+  headers: { "terminal": "h5" }
 
 })
 
@@ -42,8 +44,8 @@ http.interceptors.response.use(
       localStorage.removeItem('h5_token')
       localStorage.removeItem('h5_userInfo')
 
-      // 🔥 強制回登入頁
-      window.location.href = '/Login'
+      // 🔥 使用 router 進行頁內跳轉，避免 hash 路由下的刷新問題
+      router.push('/login')
     }
 
     return response

@@ -24,7 +24,7 @@ onMounted(() => {
     console.log(router,'router')
     //根據當前路由讀取當前路由在路由表中的位置
     const data = router.options.routes[0]
-    active.value = data.children.findIndex(item =>'/' + item.path === item.path === route.path)
+    active.value = data.children.findIndex(item =>'/' + item.path === route.path)
 })
 
 </script>
