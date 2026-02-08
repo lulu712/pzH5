@@ -9,6 +9,11 @@ export default{
     //首頁數據(GET)
     index(){
         return request.get('/Index/index')
+    },
+
+    //訂單詳情（陪護師列表GET）
+    h5Companion(){
+        return request.get('/h5/companion')
     }
 
 

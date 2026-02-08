@@ -29,14 +29,14 @@
             :key="item.id"
             class="center-img"
             span="11"
-            @click="goOrderTow(index)"
+            @click="goOrderTwo(index)"
         >
             <van-image
                 :src="item.pic_image_url"
             />
         </van-col>
     </van-row>
-    <van-row class="yy-list"  v-for="item in homeData.hospitals" justify="space-around">
+    <van-row @click="goOrder(item)" class="yy-list"  v-for="item in homeData.hospitals" justify="space-around">
         <van-col span="6">
             <van-image
                 width="100"
@@ -58,6 +58,7 @@
 
 <script setup>
 import { ref,reactive,onMounted,getCurrentInstance } from 'vue';
+import { useRouter } from 'vue-router';
 
 
 const searchValue=ref('')
@@ -73,12 +74,21 @@ const homeData=reactive({
     slides:[]
 })
 
-//快捷入口
-const goOrderTow = (()=>{
+//快捷入口(要拿到點選的索引值)
+const router=useRouter()
+const goOrderTwo= (index)=>{
+    // 加上安全檢查，避免 index 超出範圍
+    if (homeData.hospitals[index]) {
+        router.push(`/createOrder?id=${homeData.hospitals[index].id}`)
+    }
+}
 
-})
 
 
+//點擊醫院列表
+const goOrder=(data)=>{
+    router.push(`/createOrder?id=${data.id}`)   
+}
 
 
 onMounted(async()=>{
