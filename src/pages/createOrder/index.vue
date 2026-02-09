@@ -7,14 +7,46 @@
         <statusBar item="0"/>
         <van-cell class="cell">
             <template #title>
-                
+             <van-image
+                width="25"
+                height="25"
+                :src="creatInfo.service.serviceImg"
+            />   
+            <span class="service-name">{{ creatInfo.service.serviceName }}</span>
+            </template>
+            <template #default>
+                <div class="service-text">服務內容</div>
             </template>
         </van-cell>
+        <van-cell-group class="cell">
+            <van-cell>
+                <template #title>就診醫院</template>
+                <template #default>
+                    <div @click="showHospital=true" >
+                        {{ form.hospital_name || "請選擇就診醫院" }}
+                        <van-icon name="arrow" />
+                    </div>
+                </template>
+            </van-cell>
+        </van-cell-group>
+
+        <van-popup
+            v-model:show="showHospital"
+            position="bottom"
+            :style="{ height: '30%' }"
+        >
+            <van-picker
+                :columns="showHospColums"
+                @confirm="showHospConfirm"
+                @cancel="showHospital = false"
+            />
+        </van-popup>
+
     </div>
 </template>
 
 <script setup>
-import { onMounted,getCurrentInstance, reactive } from 'vue';
+import { onMounted,getCurrentInstance, reactive,ref, computed} from 'vue';
 import { useRouter } from 'vue-router';
 import statusBar from '../../components/statusBar.vue';
 
@@ -40,6 +72,30 @@ const router = useRouter()
 const goBack = () => {
   router.go(-1)
 }
+
+//form數據
+const form=reactive({})
+
+//就診醫院（選擇匡）
+const showHospital = ref(false)
+const showHospColums=computed(()=>{
+    //數據重新組裝 
+   return creatInfo.hospitals.map(item => {
+        return{text:item.name, value:item.id}
+    })
+})
+
+//選中醫院
+const showHospConfirm=(item)=>{
+    console.log(item,'item')
+    form.hospital_id = item.selectedOptions[0].value
+    form.hospital_name = item.selectedOptions[0].text
+    //關閉彈窗
+    showHospital.value=false
+
+}
+
+
 </script>
 
 <style lang="less" scoped>
