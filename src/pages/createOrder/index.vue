@@ -37,7 +37,49 @@
                     </div>
                 </template>
             </van-cell>
+            <van-cell>
+                <template #title>陪診師</template>
+                <template #default>
+                    <div @click="showComponion=true" >
+                            {{ componionName || "請選擇陪護師" }}
+                        <van-icon name="arrow" />
+                    </div>
+                </template>
+            </van-cell>
+            <van-cell>
+                <template #title>接送地址</template>
+                <template #default>
+                    <van-field
+                        class="text"
+                        input-align="right"
+                        v-model="form.receiveAddress"
+                        placeholder="請填寫接送地址"
+                    />
+                </template>
+            </van-cell>
+            <van-cell>
+                <template #title>聯絡電話</template>
+                <template #default>
+                    <van-field
+                        class="text"
+                        input-align="right"
+                        v-model="form.tel"
+                        placeholder="請填寫聯絡電話"
+                    />
+                </template>
+            </van-cell>
         </van-cell-group>
+
+        <van-cell-group title="服務需求" class="cell">
+            <van-field
+                class="text"
+                style="height: 100px;"
+                v-model="form.demand"
+                placeholder="請簡單描述您要就診的科別...."
+            />
+        </van-cell-group>
+
+        <van-button @click="sumbit" class="sumbit" type="primary" size="large">提交訂單</van-button>
 
         <!-- 選擇醫院彈窗 -->
         <van-popup
@@ -64,6 +106,18 @@
                 :min-date="minDate"
             >  
             </van-date-picker>
+        </van-popup>
+        <!-- 選擇陪診師 -->
+        <van-popup
+            v-model:show="showComponion"
+            position="bottom"
+            :style="{ height: '30%' }"
+        >
+            <van-picker
+                :columns="componionColumns"
+                @confirm="showComponionConfirm"
+                @cancel="showComponion = false"
+            />
         </van-popup>
 
     </div>
@@ -131,6 +185,30 @@ const showTimeConfirm = (item)=> {
     form.starttime = new Date(dateStr).getTime()
     showStartTime.value = false
 }
+
+
+
+//選擇陪診師
+const showComponion =ref(false)
+const componionColumns=computed(()=>{
+    //數據重新組裝 
+   return creatInfo.companion.map(item => {
+        return{text:item.name, value:item.id}
+    })
+})
+const componionName =ref()
+const showComponionConfirm =((item) =>{
+    form.companion_id = item.selectedOptions[0].value
+    componionName.value = item.selectedOptions[0].text
+    showComponion.value = false
+})
+
+//提交表單
+const sumbit= ()=>{
+
+}
+
+
 
 </script>
 
