@@ -120,6 +120,13 @@
             />
         </van-popup>
 
+        <!-- 二維碼支付彈窗 -->
+        <van-dialog :show-Confirm-Button="false" v-model:show="showCode" >
+            <van-icon name="cross" class="close" @click="closeCode"/>
+            <div>微信支付</div>
+            <van-image width="150p" height="150" :src="codeImg"/>
+            <div>請使用本人微信掃描Qrcode</div>
+        </van-dialog>
     </div>
 </template>
 
@@ -127,6 +134,7 @@
 import { onMounted,getCurrentInstance, reactive,ref, computed} from 'vue';
 import { useRouter } from 'vue-router';
 import statusBar from '../../components/statusBar.vue';
+import QrCode from 'qrcode'
 
 //獲取當前Vue實例
 const { proxy } = getCurrentInstance()
@@ -203,9 +211,40 @@ const showComponionConfirm =((item) =>{
     showComponion.value = false
 })
 
-//提交表單
-const sumbit= ()=>{
+//支付彈窗
+const showCode = ref(false)
+const codeImg = ref('')
+//支付關閉
+const closeCode =()=>{
+    showCode.value =false
+    router.push('/order')
 
+}
+
+
+//提交表單
+const sumbit=async ()=>{
+    const params =[
+        'hospital_id',
+        'hospital_name',
+        'demand',
+        'companion_id',
+        'receiveAddress',
+        'tel',
+        'starttime'
+    ]
+    for(const i of params){
+        if(!form[i]){
+            showNotify({ message: '請確認每一項已填寫' });
+            return 
+        }
+    }
+        const {data :orderRes} = await proxy.$api.createOrder(form)
+        console.log(orderRes)
+        QrCode.toDataURL(orderRes.data.wx_code).then((url)=>{
+         showCode.value = true
+         codeImg.value = url
+    })
 }
 
 
@@ -256,8 +295,12 @@ const sumbit= ()=>{
   background-size: 20px;
 }
 .sumbit {
-  position: absolute;
+  position: fixed;
   bottom: 0;
+  left: 0;
+  right: 0;
+  width: 95%;
+  margin: 0 auto 10px;
 }
 ::v-deep(.van-dialog__content) {
   text-align: center;

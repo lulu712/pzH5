@@ -14,9 +14,13 @@ export default{
     //訂單詳情（陪護師列表GET）
     h5Companion(){
         return request.get('/h5/companion')
+    },
+
+    //創建訂單(提交訂單POST)
+    createOrder(data){
+        return request.post('createOrder',data)
     }
-
-
+    
 
 
 }
