@@ -19,7 +19,13 @@ export default{
     //創建訂單(提交訂單POST)
     createOrder(data){
         return request.post('createOrder',data)
+    },
+    //訂單列表(訂單列表GET)
+    orderList(params){
+        return request.get('/order/list',{params})
     }
+
+
     
 
 
