@@ -34,6 +34,7 @@
 <script setup>
 import { ref,getCurrentInstance,onMounted } from 'vue';
 import counter from '../../components/counter.vue';
+import { useRouter } from 'vue-router';
 
 const colorMap= {
     '待支付':'#ffa200',
@@ -65,9 +66,10 @@ const onClickTab =(item) =>{
     getOrderList(item.name)
 }
 
-//跳轉詳情
+const router = useRouter()
+//跳轉訂單詳情
 const goDetail=(item)=>{
-
+  router.push(`/detail?oid=${item.out_trade_no}`)
 }
 
 const active = ref("")

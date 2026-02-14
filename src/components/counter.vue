@@ -3,7 +3,7 @@
   </template>
   
   <script setup>
-  import { ref, onMounted, defineProps, defineEmits, watch } from "vue";
+  import { ref, onMounted, onUnmounted, defineProps, defineEmits } from "vue";
   const props = defineProps({
     second: {
       type: Number,
@@ -25,24 +25,41 @@
   const emit = defineEmits(["counterOver"]);
   // 倒计时显示
   const formater = ref("");
+  let intervalId = null; // 保存定时器ID
   
   onMounted(() => {
     formater.value = TIME_FORMAT(props.second);
   });
+  
+  // 组件卸载时清除定时器
+  onUnmounted(() => {
+    if (intervalId) {
+      clearInterval(intervalId);
+      intervalId = null;
+    }
+  });
+  
   // 倒计时逻辑处理
   const TIME_FORMAT = (ts) => {
     let res;
   
     const showtime = () => {
       if (ts <= 0) {
-        clearInterval(run);
+        clearInterval(intervalId);
+        intervalId = null;
         emit("counterOver");
         return TIME_SFORMAT(0, props.sformat, props.suffix);
       }
       res = TIME_SFORMAT(ts, props.sformat, props.suffix);
       return res;
     };
-    const run = setInterval(() => {
+    
+    // 清除之前的定时器（如果存在）
+    if (intervalId) {
+      clearInterval(intervalId);
+    }
+    
+    intervalId = setInterval(() => {
       ts -= 1000;
       res = showtime();
       formater.value = res;
