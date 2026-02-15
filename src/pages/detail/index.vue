@@ -14,8 +14,40 @@
             <div class="text3">
                 <van-button type="success" @click="showCode = true">立即支付（10元）</van-button>
             </div>
+            <div class="dzf" v-if="detailData.trade_state === '待服务'">
+              <div class="text1">正在為您安排服務專員...</div>
+              <div class="text2">請保持手機暢通，稍後將會有專人與您聯繫</div>
+            </div>
+            <div class="dzf" v-if="detailData.trade_state === '已完成'">
+              <div class="text1">服務已完成...</div>
+              <div class="text2">感謝您的使用，如有問題請洽客服</div>
+            </div>
+            <div class="dzf" v-if="detailData.trade_state === '已取消'">
+              <div class="text1">訂單已取消</div>
+              <div class="text2">期待下次為您服務，有任何需求歡迎洽詢客服</div>
+            </div>
           </div>
         </div>
+
+        <van-cell-group class="card">
+          <div class="header-text">預約詳情</div>
+          <van-cell 
+              v-for="(item,key) in makeInfo"
+              :key="key"
+              :title="item"
+              :value="formatData(key)"
+          />
+        </van-cell-group>
+        <van-cell-group class="card">
+          <div class="header-text">訂單訊息</div>
+          <van-cell 
+              v-for="(item,key) in orderInfo"
+              :key="key"
+              :title="item"
+              :value="formatData(key)"
+          />
+        </van-cell-group>
+
         <!-- 二維碼支付彈窗 -->
         <van-dialog :show-Confirm-Button="false" v-model:show="showCode" >
             <van-icon name="cross" class="close" @click="closeCode"/>
@@ -66,14 +98,55 @@ const stateMap={
   '已取消':40,
 }
 
+//訂單詳情
+const makeInfo={
+    service_name:'預約服務',
+    hospital_name:'就診醫院',
+    starttime:'期望就診時間',
+    'client.name' :'就診人姓名',
+    'client.mobile':'就診人電話',
+    receiveAddress : '接送地址',
+    demand:'其他備註'
+}
+
+const orderInfo={
+    tel : '就診人電話',
+    order_start_time : '下單時間',
+    price : '應付金額',
+    out_trade_no : '訂單編號'
+}
+
+const formatData = (key) => {
+  if (key.indexOf(".") === -1) {
+    if (key === "order_start_time") {
+      return formatTimestamp(detailData[key]);
+    }
+    return detailData[key];
+  }
+  let arr = key.split(".").reduce((o, p) => {
+    return (o || {})[p];
+  }, detailData);
+  return arr;
+}
+function formatTimestamp(timestamp) {
+  const date = new Date(timestamp);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0"); // 月份是从0开始的，所以需要+1
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+}
+
+
+
 //詳情頁數據
 const detailData = reactive({})
+
 
 onMounted(async()=>{
   const {data}= await proxy.$api.orderDetail({oid:route.query.oid})
   Object.assign(detailData,data.data)
-   QrCode.toDataURL(orderRes.data.wx_code).then((url)=>{
-         showCode.value = true
+   QrCode.toDataURL(data.data.code_url).then((url)=>{
          codeImg.value = url
     })
   console.log(detailData,'詳情頁數據')
